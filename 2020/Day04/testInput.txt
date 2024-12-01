@@ -1,0 +1,8 @@
+hcl:#8887f5
+hgt:76in
+byr:2002
+iyr:2030
+cid:88
+pid:005457662
+ecl:hzl
+eyr:2030
