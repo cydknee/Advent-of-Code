@@ -9,23 +9,16 @@ def read_file():
         return list(locations[0]), list(locations[1])
 
 
-def part1():
-    distance = 0
-    list_1, list_2 = read_file()
-    list_1.sort(), list_2.sort()
-    for location in list(zip(list_1, list_2)):
-        distance += abs(location[1] - location[0])
-    return distance
+def part1(location_1, location_2):
+    location_1.sort(), location_2.sort()
+    return sum(abs(location[1] - location[0]) for location in list(zip(location_1, location_2)))
 
 
-def part2():
-    similarity = 0
-    list_1, list_2 = read_file()
-    for location in list_1:
-        similarity += location * list_2.count(location)
-    return similarity
+def part2(location_1, location_2):
+    return sum(location * location_2.count(location) for location in location_1)
 
 
 if __name__ == '__main__':
-    print(part1())  # 2164381
-    print(part2())  # 20719933
+    list_1, list_2 = read_file()
+    print(part1(list_1, list_2))  # 2164381
+    print(part2(list_1, list_2))  # 20719933
