@@ -10,7 +10,7 @@ def read_file():
 
 
 def part1(program):
-    return sum([int(x[0]) * int(x[1]) for x in [mul[4:-1].split(',') for mul in re.findall(r'mul\([\d]+,[\d]+\)', program)]])
+    return sum([x * y for x, y in [map(int, mul[4:-1].split(',')) for mul in re.findall(r'mul\([\d]+,[\d]+\)', program)]])
 
 
 def part2(program):
