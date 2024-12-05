@@ -23,8 +23,7 @@ def part2(program):
             perform_mul = False
         else:
             if perform_mul:
-                x, y = map(int, mul[4:-1].split(','))
-                total += x * y
+                total += [x * y for x, y in [map(int, mul[4:-1].split(','))]][0]
     return total
 
 
