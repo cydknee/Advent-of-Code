@@ -9,14 +9,10 @@ def read_file():
         return file.read()
 
 
-def part1(program):
-    return sum([x * y for x, y in [map(int, mul[4:-1].split(',')) for mul in re.findall(r'mul\([\d]+,[\d]+\)', program)]])
-
-
-def part2(program):
+def solution(expression):
     total = 0
     perform_mul = True
-    for mul in re.findall(r'do\(\)|don\'t\(\)|mul\([\d]+,[\d]+\)', program):
+    for mul in re.findall(expression, read_file()):
         if mul == 'do()':
             perform_mul = True
         elif mul == "don't()":
@@ -27,6 +23,14 @@ def part2(program):
     return total
 
 
+def part1():
+    return solution(r'mul\([\d]+,[\d]+\)')
+
+
+def part2():
+    return solution(r'do\(\)|don\'t\(\)|mul\([\d]+,[\d]+\)')
+
+
 if __name__ == '__main__':
-    print(part1(read_file()))  # 185797128
-    print(part2(read_file()))  # 89798695
+    print(part1())  # 185797128
+    print(part2())  # 89798695
