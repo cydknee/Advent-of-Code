@@ -11,12 +11,12 @@ def read_file():
         return rules, updates
 
 
-def bubble_sort(updates, rules):
+def bubble_sort(update, rules):
     changed = False
-    for i in range(len(updates)):
-        for j in range(i+1, len(updates)):
-            if [updates[j], updates[i]] in rules:
-                updates[j], updates[i] = updates[i], updates[j]
+    for i in range(len(update)):
+        for j in range(i+1, len(update)):
+            if [update[j], update[i]] in rules:
+                update[j], update[i] = update[i], update[j]
                 changed = True
     return changed
 
