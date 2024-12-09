@@ -1,49 +1,38 @@
 """ AoC 2024 Day 5: Print Queue """
 
-FILE_NAME = "../../testInput.txt"
+FILE_NAME = "Input.txt"
 
 
 def read_file():
     with open(FILE_NAME, "r") as file:
         puzzle_input = [x.splitlines() for x in file.read().split("\n\n")]
-        input_1 = [[y, z] for y, z in [map(int, x.split("|")) for x in puzzle_input[0]]]
-        input_2 = [list(y) for y in [map(int, x.split(",")) for x in puzzle_input[1]]]
-        return input_1, input_2
+        rules = [[y, z] for y, z in [map(int, x.split("|")) for x in puzzle_input[0]]]
+        updates = [list(y) for y in [map(int, x.split(",")) for x in puzzle_input[1]]]
+        return rules, updates
 
 
-def solution(ordering_rules, updates):
-    total = 0
-    broken_updates = []
-    for update in updates:
-        safe_count, checks_after, checks_before = 0, 0, 0
-        for index in range(len(update)):
-            pages_after = update[index+1:]
-            checks_after += len(pages_after)
-            rules = [x for x in ordering_rules if x[0] == update[index]]
-            safe_count += len([x for x in pages_after if [update[index], x] in rules])
+def bubble_sort(updates, rules):
+    changed = False
+    for i in range(len(updates)):
+        for j in range(i+1, len(updates)):
+            if [updates[j], updates[i]] in rules:
+                updates[j], updates[i] = updates[i], updates[j]
+                changed = True
+    return changed
 
-            pages_before = update[:index]
-            checks_before += len(pages_before)
-            rules = [x for x in ordering_rules if x[1] == update[index]]
-            safe_count += len([x for x in pages_before if [x, update[index]] in rules])
 
-        if safe_count == checks_after + checks_before:
-            total += update[len(update)//2]
+def part_1_and_2():
+    sorted_total, unsorted_total = 0, 0
+    rules, updates = read_file()
+    for instructions in updates:
+        if bubble_sort(instructions, rules):
+            unsorted_total += instructions[len(instructions) // 2]
         else:
-            broken_updates.append(update)
-    return total, broken_updates
-
-
-def part1(ordering_rules, updates):
-    return solution(ordering_rules, updates)[0]
-
-
-def part2(ordering_rules, updates):
-    updates = solution(ordering_rules, updates)[1]
-    return len(updates)
+            sorted_total += instructions[len(instructions) // 2]
+    return sorted_total, unsorted_total
 
 
 if __name__ == '__main__':
-    part_1, part_2 = read_file()
-    print(part1(part_1, part_2))  # 
-    print(part2(part_1, part_2))  #
+    part_1, part_2 = part_1_and_2()
+    print(part_1)  # 5762
+    print(part_2)  # 4130
