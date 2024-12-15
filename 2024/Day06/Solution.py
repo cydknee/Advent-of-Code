@@ -1,11 +1,8 @@
 """ AoC 2024 Day 6: Guard Gallivant """
 
-from colorama import init
-from termcolor import colored
-
-
 FILE_NAME = "Input.txt"
 DIRECTIONS = ['<', '^', '>', 'V']
+MOVEMENT = [(0, -1), (-1, 0), (0, 1), (1, 0)]
 
 
 def read_file():
@@ -13,71 +10,58 @@ def read_file():
         return [list(x) for x in file.read().splitlines()]
 
 
-def get_guard_position(data):
-    for row_index, rows in enumerate(data):
-        for col_index, col in enumerate(rows):
-            if col in DIRECTIONS:
-                return row_index, col_index, DIRECTIONS.index(col)
+def find_guard(grid):
+    for row_index, row in enumerate(grid):
+        for col_index, col in enumerate(row):
+            if grid[row_index][col_index] in DIRECTIONS:
+                return row_index, col_index, DIRECTIONS.index(grid[row_index][col_index])
 
 
-def print_map(data):
-    init()
-    for row_index, rows in enumerate(data):
-        for col_index, col in enumerate(rows):
-            match col:
-                case '.':
-                    print(col, end=' ')
-                case "#":
-                    print(colored(col, 'green'), end=' ')
-                case '<', '^', '>', 'V':
-                    print(colored(col, 'red'), end=' ')
-                case 'X':
-                    print(colored(col, 'yellow'), end=' ')
-        print()
+def guards_route(grid, row, col, direction):
+    direction_row, direction_column = MOVEMENT[direction]
+    part_1_positions, part_2_positions = set(), set()
+
+    while True:
+        part_1_positions.add((row, col))
+        part_2_positions.add((row, col, direction_row, direction_column))
+
+        next_row = row + direction_row
+        next_col = col + direction_column
+
+        if next_row < 0 or next_row >= len(grid) or next_col < 0 or next_col >= len(grid[0]):
+            return part_1_positions
+        elif grid[next_row][next_col] == "#":
+            direction = (direction + 1) % len(DIRECTIONS)
+            direction_row, direction_column = MOVEMENT[direction]
+        else:
+            row += direction_row
+            col += direction_column
+
+        if (row, col, direction_row, direction_column) in part_2_positions:
+            return True
 
 
-def count_xs(data):
-    t = [[len(col) for col in rows if col == 'X'] for rows in data]
-    print(t)
+def part1(grid):
+    guard_row, guard_col, guard_direction = find_guard(grid)
+    return guards_route(grid, guard_row, guard_col, guard_direction)
 
+
+def part2(grid, guard_route):
     count = 0
-    for row_index, rows in enumerate(data):
-        for col_index, col in enumerate(rows):
-            if col == 'X':
-                count += 1
+    guard_row, guard_col, guard_direction = find_guard(grid)
+
+    for (row_index, col_index) in guard_route:
+        if grid[row_index][col_index] != ".":
+            continue
+        grid[row_index][col_index] = "#"
+        if guards_route(grid, guard_row, guard_col, guard_direction) == True:
+            count += 1
+        grid[row_index][col_index] = "."
+
     return count
 
 
-def part1(area_map):
-    row, col, direction = get_guard_position(area_map)
-    while True:
-        next_row, next_col = row, col
-        match DIRECTIONS[direction]:
-            case "^":
-                next_row -= 1
-            case ">":
-                next_col += 1
-            case "V":
-                next_row += 1
-            case "<":
-                next_col -= 1
-
-        if area_map[next_row][next_col] == "#":
-            direction = (direction + 1) % len(DIRECTIONS)
-        else:
-            area_map[row][col] = "X"
-            row, col = next_row, next_col
-        area_map[row][col] = DIRECTIONS[direction]
-
-        if not (0 < row < len(area_map[0])) or not (0 < col < len(area_map)):
-            break
-    return count_xs(area_map) + 1
-
-
-def part2(reports):
-    return None
-
-
 if __name__ == '__main__':
-    print(part1(read_file()))  # 4967
-    print(part2(read_file()))  #
+    grid_map = read_file()
+    print(len(part1(grid_map)))  # 4967
+    print(part2(grid_map, part1(grid_map)))  # 1789
