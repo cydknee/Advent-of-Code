@@ -5,18 +5,52 @@ FILE_NAME = "testInput.txt"
 
 def read_file():
     with open(FILE_NAME, "r") as file:
-        return [[[int(z) for z in y.split(" ")] for y in x.split(": ")] for x in file.read().splitlines()]
+        return [[int(y.replace(":", "")) for y in x.split(" ")] for x in file.read().split("\n")]
 
 
-def part1(report):
-    for line in report:
-        target = line[0][0]
-        print(target, end=" ")
-        for num in line[1]:
-            print(num, end=" ")
+def produce_tree(values, limit):
+    queue = [values[0]]
 
-        print()
-    return None
+    for v in values[1:]:
+        new_queue = []
+
+        for q in queue:
+            summation = v + q
+            product = v * q
+            print(f"v = {v}, q = {q}, summation = {summation}, product = {product} ")
+
+            if summation <= limit:
+                new_queue.append(summation)
+
+            if product <= limit:
+                new_queue.append(product)
+            print(f"{new_queue}")
+        queue = new_queue
+
+    output = []
+
+    for q in queue:
+        if q == limit:
+            output.append(q)
+
+    return output
+
+
+def part1(reports):
+    total = 0
+
+    for line in reports:
+        limit = line.pop(0)
+        values = line
+
+        tree = produce_tree(values, limit)
+
+        if len(tree) == 0:
+            continue
+
+        total += limit
+
+    return total
 
 
 def part2(reports):
